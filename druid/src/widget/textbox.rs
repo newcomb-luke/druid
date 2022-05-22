@@ -507,9 +507,7 @@ impl<T: TextStorage + EditableText> Widget<T> for TextBox<T> {
     fn lifecycle(&mut self, ctx: &mut LifeCycleCtx, event: &LifeCycle, data: &T, env: &Env) {
         match event {
             LifeCycle::WidgetAdded => {
-                if matches!(event, LifeCycle::WidgetAdded) {
-                    self.placeholder_text.resolve(data, env);
-                }
+                self.placeholder_text.resolve(data, env);
                 ctx.register_text_input(self.text().input_handler());
             }
             LifeCycle::BuildFocusChain => {

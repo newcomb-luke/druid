@@ -376,13 +376,11 @@ impl<T: TextStorage + EditableText> Widget<T> for TextComponent<T> {
             LifeCycle::Internal(crate::InternalLifeCycle::ParentWindowOrigin)
                 if self.can_write() =>
             {
-                if self.can_write() {
-                    let prev_origin = self.borrow().origin;
-                    let new_origin = ctx.window_origin();
-                    if prev_origin != new_origin {
-                        self.borrow_mut().origin = ctx.window_origin();
-                        ctx.invalidate_text_input(ImeInvalidation::LayoutChanged);
-                    }
+                let prev_origin = self.borrow().origin;
+                let new_origin = ctx.window_origin();
+                if prev_origin != new_origin {
+                    self.borrow_mut().origin = ctx.window_origin();
+                    ctx.invalidate_text_input(ImeInvalidation::LayoutChanged);
                 }
             }
             LifeCycle::DisabledChanged(disabled) => {
