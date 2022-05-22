@@ -59,6 +59,7 @@ pub struct TextBox<T> {
     inner: Scroll<T, Padding<T, TextComponent<T>>>,
     scroll_to_selection_after_layout: bool,
     multiline: bool,
+    password: bool,
     /// true if a click event caused us to gain focus.
     ///
     /// On macOS, if focus happens via click then we set the selection based
@@ -94,6 +95,7 @@ impl<T: EditableText + TextStorage> TextBox<T> {
             scroll_to_selection_after_layout: false,
             placeholder_text: placeholder_text.into(),
             placeholder_layout,
+            password: false,
             multiline: false,
             was_focused_from_click: false,
             cursor_on: false,
@@ -111,6 +113,14 @@ impl<T: EditableText + TextStorage> TextBox<T> {
         this.text_mut().borrow_mut().set_accepts_newlines(true);
         this.inner.set_horizontal_scroll_enabled(false);
         this.multiline = true;
+        this
+    }
+
+    /// Create a new password `TextBox`
+    pub fn password() -> Self {
+        let mut this = TextBox::new();
+        this.text_mut().borrow_mut().set_allows_clipboard_copy(false);
+        this.password = true;
         this
     }
 

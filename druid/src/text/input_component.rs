@@ -95,6 +95,7 @@ pub struct EditSession<T> {
     /// notification when the user cancels editing.
     pub send_notification_on_cancel: bool,
     selection: Selection,
+    allows_clipboard_copy: bool,
     accepts_newlines: bool,
     accepts_tabs: bool,
     alignment: TextAlignment,
@@ -494,7 +495,7 @@ impl<T> EditSession<T> {
     ///
     /// If the new selection is different from the current selection, this
     /// will return an ime event that the controlling widget should use to
-    /// invalidte the platform's IME state, by passing it to
+    /// invalidate the platform's IME state, by passing it to
     /// [`EventCtx::invalidate_text_input`].
     #[must_use]
     pub fn set_selection(&mut self, selection: Selection) -> Option<ImeInvalidation> {
@@ -510,6 +511,11 @@ impl<T> EditSession<T> {
     /// The range of text currently being modified by an IME.
     pub fn composition_range(&self) -> Option<Range<usize>> {
         self.composition_range.clone()
+    }
+
+    /// Sets whether or not this session will allow the text to be copied to the clipboard.
+    pub fn set_allows_clipboard_copy(&mut self, allows_clipboard_copy: bool) {
+        self.allows_clipboard_copy = allows_clipboard_copy;
     }
 
     /// Sets whether or not this session will allow the insertion of newlines.
@@ -598,14 +604,16 @@ impl<T: TextStorage + EditableText> EditSession<T> {
     /// Returns `true` if the clipboard was set, and `false` if not (indicating)
     /// that the selection was empty.)
     pub fn set_clipboard(&self) -> bool {
-        if let Some(text) = self
-            .layout
-            .text()
-            .and_then(|txt| txt.slice(self.selection.range()))
-        {
-            if !text.is_empty() {
-                crate::Application::global().clipboard().put_string(text);
-                return true;
+        if self.allows_clipboard_copy {
+            if let Some(text) = self
+                .layout
+                .text()
+                .and_then(|txt| txt.slice(self.selection.range()))
+            {
+                if !text.is_empty() {
+                    crate::Application::global().clipboard().put_string(text);
+                    return true;
+                }
             }
         }
         false
@@ -943,6 +951,7 @@ impl<T> Default for TextComponent<T> {
             composition_range: None,
             send_notification_on_return: false,
             send_notification_on_cancel: false,
+            allows_clipboard_copy: true,
             accepts_newlines: false,
             accepts_tabs: false,
             alignment: TextAlignment::Start,

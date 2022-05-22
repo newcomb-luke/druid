@@ -48,7 +48,7 @@ use crate::{Env, FontDescriptor, KeyOrValue, PaintCtx, RenderContext, UpdateCtx}
 pub struct TextLayout<T> {
     text: Option<T>,
     font: KeyOrValue<FontDescriptor>,
-    // when set, this will be used to override the size in he font descriptor.
+    // when set, this will be used to override the size in the font descriptor.
     // This provides an easy way to change only the font size, while still
     // using a `FontDescriptor` in the `Env`.
     text_size_override: Option<KeyOrValue<f64>>,
