@@ -119,7 +119,9 @@ impl<T: EditableText + TextStorage> TextBox<T> {
     /// Create a new password `TextBox`
     pub fn password() -> Self {
         let mut this = TextBox::new();
-        this.text_mut().borrow_mut().set_allows_clipboard_copy(false);
+        this.text_mut()
+            .borrow_mut()
+            .set_allows_clipboard_copy(false);
         this.password = true;
         this
     }
